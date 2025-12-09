@@ -29,7 +29,10 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
    
-    
+    @GetMapping("/welcome")
+    public String Welcome(@RequestBody RefreshTokenRequest request) {
+        return "Welcome......";
+    }
    
 
     @PostMapping("/refresh")
