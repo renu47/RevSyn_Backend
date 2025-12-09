@@ -30,7 +30,7 @@ public class AuthController {
 
    
     @GetMapping("/welcome")
-    public String Welcome(@RequestBody RefreshTokenRequest request) {
+    public String Welcome() {
         return "Welcome......";
     }
    
