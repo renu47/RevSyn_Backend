@@ -37,7 +37,7 @@ public class AilmentController {
         return ailmentService.createAilment(dto);
     }
 
-    @GetMapping("getall")
+    @GetMapping("/getall")
     public List<AilmentResponseDTO> getAllActiveAilments() {
         return ailmentService.getActiveAilments();
     }

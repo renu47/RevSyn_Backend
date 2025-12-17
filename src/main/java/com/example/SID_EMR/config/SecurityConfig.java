@@ -26,6 +26,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {}) 
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/ailments/test","/api/auth/**", "/api/users/**", "/h2-console/**").permitAll() // allow login/register without token
