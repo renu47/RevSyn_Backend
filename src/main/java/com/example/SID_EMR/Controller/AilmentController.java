@@ -26,6 +26,11 @@ public class AilmentController {
         this.ailmentService = ailmentService;
     }
     
+    @GetMapping("/test")
+    public String Welcome() {
+        return "Ailment Controller test......";
+    }
+    
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public AilmentResponseDTO createAilment(@RequestBody AilmentRequestDTO dto) {
