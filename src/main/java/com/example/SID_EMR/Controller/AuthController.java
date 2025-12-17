@@ -31,7 +31,7 @@ public class AuthController {
    
     @GetMapping("/welcome")
     public String Welcome() {
-        return "Welcome......";
+        return "Welcome test......";
     }
    
 
