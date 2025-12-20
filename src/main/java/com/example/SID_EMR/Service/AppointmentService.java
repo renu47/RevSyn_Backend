@@ -1,6 +1,8 @@
 package com.example.SID_EMR.Service;
 
+import com.example.SID_EMR.DTO.AppointmentListResponseDTO;
 import com.example.SID_EMR.DTO.AppointmentRequestDTO;
+import com.example.SID_EMR.DTO.AppointmentStatusResponseDTO;
 import com.example.SID_EMR.Entity.Ailment;
 import com.example.SID_EMR.Entity.Appointment;
 import com.example.SID_EMR.Entity.AppointmentStatus;
@@ -11,6 +13,10 @@ import com.example.SID_EMR.Repository.AilmentRepository;
 import com.example.SID_EMR.Repository.AppointmentRepository;
 import com.example.SID_EMR.Repository.DoctorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -178,4 +184,70 @@ public class AppointmentService {
                 .map(t -> t.toString())
                 .collect(Collectors.toList());
     }
+    
+    public Page<AppointmentListResponseDTO> getAppointments(
+            LocalDate fromDate,
+            LocalDate toDate,
+            String patientMobile,
+            Long doctorId,
+            Long ailmentId,
+            AppointmentStatus status,
+            int page,
+            int size
+    ) {
+
+        if (fromDate.isAfter(toDate)) {
+            throw new IllegalArgumentException("fromDate cannot be after toDate");
+        }
+
+        Pageable pageable =
+                PageRequest.of(page, size, Sort.by("appointmentDate").ascending());
+
+        Page<Appointment> appointments =
+                appointmentRepository.searchAppointments(
+                        fromDate,
+                        toDate,
+                        patientMobile,
+                        doctorId,
+                        ailmentId,
+                        status,
+                        pageable
+                );
+
+        return appointments.map(a -> new AppointmentListResponseDTO(
+                a.getId(),
+                a.getPatientName(),
+                a.getPatientMobile(),
+                a.getDoctor().getId(),
+                a.getDoctor().getName(),
+                a.getAilment().getId(),
+                a.getAilment().getName(),
+                a.getAppointmentDate(),
+                a.getAppointmentTime(),
+                a.getConsultationFees(),
+                a.getStatus()
+        ));
+    }
+    
+    public AppointmentStatusResponseDTO getAppointmentStats(LocalDate fromDate, LocalDate toDate) {
+
+        if (fromDate.isAfter(toDate)) {
+            throw new IllegalArgumentException("fromDate cannot be after toDate");
+        }
+
+        long scheduled = appointmentRepository.countByStatusAndDateRange(
+                AppointmentStatus.SCHEDULED, fromDate, toDate
+        );
+
+        long completed = appointmentRepository.countByStatusAndDateRange(
+                AppointmentStatus.COMPLETED, fromDate, toDate
+        );
+
+        long cancelled = appointmentRepository.countByStatusAndDateRange(
+                AppointmentStatus.CANCELLED, fromDate, toDate
+        );
+
+        return new AppointmentStatusResponseDTO(scheduled, completed, cancelled);
+    }
+
 }

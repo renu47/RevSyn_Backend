@@ -1,12 +1,20 @@
 package com.example.SID_EMR.Controller;
 
+import com.example.SID_EMR.DTO.AppointmentListResponseDTO;
 import com.example.SID_EMR.DTO.AppointmentRequestDTO;
 import com.example.SID_EMR.DTO.AppointmentResponseDTO;
+import com.example.SID_EMR.DTO.AppointmentStatusResponseDTO;
 import com.example.SID_EMR.Entity.Appointment;
+import com.example.SID_EMR.Entity.AppointmentStatus;
 import com.example.SID_EMR.Service.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,6 +90,38 @@ public class AppointmentController {
         // date as yyyy-MM-dd string
         return appointmentService.getAvailableSlots(doctorId, date);
     }
+
+    @GetMapping("/get")
+    public Page<AppointmentListResponseDTO> getAppointments(
+            @RequestParam LocalDate fromDate,
+            @RequestParam LocalDate toDate,
+            @RequestParam(required = false) String patientMobile,
+            @RequestParam(required = false) Long doctorId,
+            @RequestParam(required = false) Long ailmentId,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return appointmentService.getAppointments(
+                fromDate,
+                toDate,
+                patientMobile,
+                doctorId,
+                ailmentId,
+                status,
+                page,
+                size
+        );
+    }
+    
+    @GetMapping("/statuscount")
+    public AppointmentStatusResponseDTO getStats(
+            @RequestParam LocalDate fromDate,
+            @RequestParam LocalDate toDate
+    ) {
+        return appointmentService.getAppointmentStats(fromDate, toDate);
+    }
+
 
     // ------------------- Mapper -------------------
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {
