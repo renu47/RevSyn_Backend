@@ -3,6 +3,7 @@ package com.example.SID_EMR.Controller;
 import com.example.SID_EMR.DTO.AppointmentListResponseDTO;
 import com.example.SID_EMR.DTO.AppointmentRequestDTO;
 import com.example.SID_EMR.DTO.AppointmentResponseDTO;
+import com.example.SID_EMR.DTO.AppointmentSearchResponseDTO;
 import com.example.SID_EMR.DTO.AppointmentStatusResponseDTO;
 import com.example.SID_EMR.Entity.Appointment;
 import com.example.SID_EMR.Entity.AppointmentStatus;
@@ -128,6 +129,43 @@ public class AppointmentController {
                 doctorId,
                 ailmentId);
     }
+    
+    @GetMapping("/search")
+    public AppointmentSearchResponseDTO searchAppointments(
+            @RequestParam LocalDate fromDate,
+            @RequestParam LocalDate toDate,
+            @RequestParam(required = false) String patientMobile,
+            @RequestParam(required = false) Long doctorId,
+            @RequestParam(required = false) Long ailmentId,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        Page<AppointmentListResponseDTO> appointments =
+                appointmentService.getAppointments(
+                        fromDate,
+                        toDate,
+                        patientMobile,
+                        doctorId,
+                        ailmentId,
+                        status,
+                        page,
+                        size
+                );
+
+        AppointmentStatusResponseDTO statusCounts =
+                appointmentService.getAppointmentStats(
+                        fromDate,
+                        toDate,
+                        patientMobile,
+                        doctorId,
+                        ailmentId
+                );
+
+        return new AppointmentSearchResponseDTO(appointments, statusCounts);
+    }
+
 
 
     // ------------------- Mapper -------------------
