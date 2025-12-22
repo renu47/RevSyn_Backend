@@ -57,11 +57,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         SELECT COUNT(a)
         FROM Appointment a
         WHERE a.appointmentDate BETWEEN :fromDate AND :toDate
-          AND a.status = :status
+            AND (:patientMobile IS NULL OR a.patientMobile = :patientMobile)
+            AND (:doctorId IS NULL OR a.doctor.id = :doctorId)
+            AND (:ailmentId IS NULL OR a.ailment.id = :ailmentId)
+            AND (:status IS NULL OR a.status = :status)
     """)
     long countByStatusAndDateRange(
             @Param("status") AppointmentStatus status,
             @Param("fromDate") LocalDate fromDate,
-            @Param("toDate") LocalDate toDate
+            @Param("toDate") LocalDate toDate,
+            String patientMobile,
+            Long doctorId,
+            Long ailmentId
     );
 }

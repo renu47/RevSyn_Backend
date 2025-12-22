@@ -191,7 +191,7 @@ public class AppointmentService {
             String patientMobile,
             Long doctorId,
             Long ailmentId,
-            AppointmentStatus status,
+            String status,
             int page,
             int size
     ) {
@@ -199,6 +199,25 @@ public class AppointmentService {
         if (fromDate.isAfter(toDate)) {
             throw new IllegalArgumentException("fromDate cannot be after toDate");
         }
+        if (patientMobile != null && patientMobile.isBlank()) {
+            patientMobile = null;
+        }
+        if (doctorId != null && doctorId == 0) {
+            patientMobile = null;
+        }
+        if (ailmentId != null && ailmentId == 0) {
+        	ailmentId = null;
+        }
+        AppointmentStatus Astatus = null;
+        if(status.trim().equalsIgnoreCase("SCHEDULED"))
+        	Astatus = AppointmentStatus.SCHEDULED;
+        else if(status.trim().equalsIgnoreCase("COMPLETED"))
+        	Astatus = AppointmentStatus.COMPLETED;
+        else if(status.trim().equalsIgnoreCase("CANCELLED"))
+        	Astatus = AppointmentStatus.CANCELLED;
+        else 
+        	Astatus = null;
+        
 
         Pageable pageable =
                 PageRequest.of(page, size, Sort.by("appointmentDate").ascending());
@@ -210,7 +229,7 @@ public class AppointmentService {
                         patientMobile,
                         doctorId,
                         ailmentId,
-                        status,
+                        Astatus,
                         pageable
                 );
 
@@ -229,22 +248,51 @@ public class AppointmentService {
         ));
     }
     
-    public AppointmentStatusResponseDTO getAppointmentStats(LocalDate fromDate, LocalDate toDate) {
+    public AppointmentStatusResponseDTO getAppointmentStats(LocalDate fromDate,
+            LocalDate toDate,
+            String patientMobile,
+            Long doctorId,
+            Long ailmentId) {
 
         if (fromDate.isAfter(toDate)) {
             throw new IllegalArgumentException("fromDate cannot be after toDate");
         }
+        if (patientMobile != null && patientMobile.isBlank()) {
+            patientMobile = null;
+        }
+        if (doctorId != null && doctorId == 0) {
+            patientMobile = null;
+        }
+        if (ailmentId != null && ailmentId == 0) {
+        	ailmentId = null;
+        }
+
 
         long scheduled = appointmentRepository.countByStatusAndDateRange(
-                AppointmentStatus.SCHEDULED, fromDate, toDate
+                AppointmentStatus.SCHEDULED,
+                fromDate, 
+                toDate,          
+                patientMobile,
+                doctorId,
+                ailmentId
         );
 
         long completed = appointmentRepository.countByStatusAndDateRange(
-                AppointmentStatus.COMPLETED, fromDate, toDate
+                AppointmentStatus.COMPLETED,
+                fromDate, 
+                toDate,          
+                patientMobile,
+                doctorId,
+                ailmentId
         );
 
         long cancelled = appointmentRepository.countByStatusAndDateRange(
-                AppointmentStatus.CANCELLED, fromDate, toDate
+                AppointmentStatus.CANCELLED, 
+                fromDate, 
+                toDate,          
+                patientMobile,
+                doctorId,
+                ailmentId
         );
 
         return new AppointmentStatusResponseDTO(scheduled, completed, cancelled);

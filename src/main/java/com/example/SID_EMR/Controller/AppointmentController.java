@@ -98,7 +98,7 @@ public class AppointmentController {
             @RequestParam(required = false) String patientMobile,
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) Long ailmentId,
-            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -117,9 +117,16 @@ public class AppointmentController {
     @GetMapping("/statuscount")
     public AppointmentStatusResponseDTO getStats(
             @RequestParam LocalDate fromDate,
-            @RequestParam LocalDate toDate
+            @RequestParam LocalDate toDate,
+            @RequestParam(required = false) String patientMobile,
+            @RequestParam(required = false) Long doctorId,
+            @RequestParam(required = false) Long ailmentId
     ) {
-        return appointmentService.getAppointmentStats(fromDate, toDate);
+        return appointmentService.getAppointmentStats(fromDate, 
+        		toDate,
+                patientMobile,
+                doctorId,
+                ailmentId);
     }
 
 
