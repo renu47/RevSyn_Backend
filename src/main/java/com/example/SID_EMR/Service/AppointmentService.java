@@ -209,7 +209,9 @@ public class AppointmentService {
         	ailmentId = null;
         }
         AppointmentStatus Astatus = null;
-        if(status.trim().equalsIgnoreCase("SCHEDULED"))
+        if(status.isBlank() || status.isEmpty())
+        	 Astatus = null;
+        else if(status.trim().equalsIgnoreCase("SCHEDULED"))
         	Astatus = AppointmentStatus.SCHEDULED;
         else if(status.trim().equalsIgnoreCase("COMPLETED"))
         	Astatus = AppointmentStatus.COMPLETED;

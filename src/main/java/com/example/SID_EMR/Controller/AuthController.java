@@ -5,7 +5,9 @@ package com.example.SID_EMR.Controller;
 import com.example.SID_EMR.DTO.LoginRequestDTO;
 import com.example.SID_EMR.DTO.RefreshTokenRequest;
 import com.example.SID_EMR.DTO.TokenResponse;
+import com.example.SID_EMR.DTO.UserProfileResponseDTO;
 import com.example.SID_EMR.Entity.RefreshToken;
+import com.example.SID_EMR.Entity.User;
 import com.example.SID_EMR.Repository.UserRepository;
 import com.example.SID_EMR.Security.JwtUtil;
 import com.example.SID_EMR.Service.AuthService;
@@ -16,6 +18,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,6 +41,23 @@ public class AuthController {
     @GetMapping("/welcome")
     public String Welcome() {
         return "Welcome test......";
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileResponseDTO> getCurrentUser(
+            Authentication authentication
+    ) {
+        // Authentication comes from Spring Security context
+        String username = authentication.getName(); // <-- from JWT subject
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserProfileResponseDTO response = new UserProfileResponseDTO(
+                user.getUsername(),
+                user.getRoles()
+        );
+
+        return ResponseEntity.ok(response);
     }
    
 

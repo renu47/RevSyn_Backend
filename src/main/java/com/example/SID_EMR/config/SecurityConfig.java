@@ -51,7 +51,8 @@ public class SecurityConfig {
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/login",
+                                "/api/auth/refresh",
                                 "/api/users/**",
                                 "/api/ailments/test",
                                 "/h2-console/**"
