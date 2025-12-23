@@ -8,11 +8,13 @@ import com.example.SID_EMR.DTO.TokenResponse;
 import com.example.SID_EMR.DTO.UserProfileResponseDTO;
 import com.example.SID_EMR.Entity.RefreshToken;
 import com.example.SID_EMR.Entity.User;
+import com.example.SID_EMR.Repository.RefreshTokenRepository;
 import com.example.SID_EMR.Repository.UserRepository;
 import com.example.SID_EMR.Security.JwtUtil;
 import com.example.SID_EMR.Service.AuthService;
 import com.example.SID_EMR.Service.RefreshTokenService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -35,8 +37,11 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
-    private final RefreshTokenService refreshTokenService;
+    private final  RefreshTokenService refreshTokenService;
 
+    private final RefreshTokenRepository refreshTokenRepository;
+
+ 
    
     @GetMapping("/welcome")
     public String Welcome() {
@@ -89,6 +94,20 @@ public class AuthController {
                     return ResponseEntity.ok(tokenResponse);
                 })
                 .orElse(ResponseEntity.status(401).build());
+    }
+    
+    @PostMapping("/logout")
+    @Transactional
+    public ResponseEntity<Void> logout(Authentication authentication) {
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        refreshTokenRepository.deleteByUser(user);
+
+        return ResponseEntity.ok().build();
     }
     
    

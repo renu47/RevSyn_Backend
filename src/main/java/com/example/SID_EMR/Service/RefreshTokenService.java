@@ -19,6 +19,7 @@ public class RefreshTokenService {
     private final UserRepository userRepository;
 
     public RefreshToken createRefreshToken(Long userId) {
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(userRepository.findById(userId).orElseThrow())
                 .token(UUID.randomUUID().toString())
