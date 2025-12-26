@@ -172,9 +172,11 @@ public class AppointmentController {
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {
         return AppointmentResponseDTO.builder()
                 .id(appointment.getId())
+                .doctorId(appointment.getDoctor().getId())
                 .doctorName(appointment.getDoctor().getName())
                 .patientName(appointment.getPatientName())
                 .patientMobile(appointment.getPatientMobile())
+                .ailmentId(appointment.getAilment() != null ? appointment.getAilment().getId(): null)
                 .ailmentName(appointment.getAilment() != null ? appointment.getAilment().getName() : null)
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getAppointmentTime())
